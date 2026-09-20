@@ -3,5 +3,5 @@ body{font-family:Arial;margin:0;background:#f4f6f8;color:#17202a}.top{background
 <body><header class="top"><div class="wrap"><h1>🛒 Achadinhos <span>do Will</span></h1><p>As melhores ofertas, em um só lugar!</p></div></header>
 <main class="wrap"><section class="hero"><h2>🔥 Achadinhos da Shopee</h2><p>Encontre produtos e ofertas selecionadas.</p></section><h2>Ofertas do Dia</h2><div id="products" class="products"></div></main><a class="admin" href="/admin">Área administrativa</a>
 <script>
-fetch("/api/products").then(r=>r.json()).then(ps=>{document.querySelector("#products").innerHTML=ps.map(p=>`<article class="card"><div class="pic">${p.emoji}</div><h3>${p.name}</h3><div>${p.rating||""}</div><div class="old">${p.oldPrice||""}</div><div class="price">${p.price}</div><a class="buy" href="${p.link}" target="_blank" rel="noopener">🛒 Ver na Shopee</a></article>`).join("")})
+fetch("./data/products.json").then(r=>r.json()).then(ps=>{document.querySelector("#products").innerHTML=ps.map(p=>`<article class="card"><div class="pic">${p.emoji}</div><h3>${p.name}</h3><div>${p.rating||""}</div><div class="old">${p.oldPrice||""}</div><div class="price">${p.price}</div><a class="buy" href="${p.link}" target="_blank" rel="noopener">🛒 Ver na Shopee</a></article>`).join("")})
 </script></body></html>
