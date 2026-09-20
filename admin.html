@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Achadinhos do Will</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{font-family:Arial;background:#0b1219;color:#fff;margin:0}
+.wrap{max-width:900px;margin:auto;padding:25px}
+.panel{background:#111f2c;padding:22px;border-radius:14px;margin-bottom:20px}
+input{width:100%;box-sizing:border-box;padding:12px;margin:6px 0 12px;border-radius:8px;border:1px solid #334553;background:#0b151e;color:white}
+button{padding:11px 15px;border:0;border-radius:8px;background:#ff6500;color:#fff;font-weight:bold;cursor:pointer}
+.muted{color:#aeb8c4}
+.item{display:flex;justify-content:space-between;gap:15px;align-items:center;border-top:1px solid #2b3b48;padding:15px 0}
+.danger{background:#b52a1d}
+.hidden{display:none}
+.msg{padding:10px;border-radius:8px;background:#1d3344;margin:10px 0}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<h1>🔐 Painel do Achadinhos do Will</h1>
+<p class="muted">Área administrativa</p>
+
+<div id="login" class="panel">
+<h2>Entrar</h2>
+
+<input id="email" type="email" placeholder="Seu e-mail">
+<input id="password" type="password" placeholder="Sua senha">
+
+<button onclick="login()">Entrar</button>
+
+<div id="loginMsg" class="msg hidden"></div>
+</div>
+
+
+<div id="app" class="hidden">
+
+<div class="panel">
+<button onclick="logout()">Sair</button>
+
+<h2>➕ Adicionar achadinho</h2>
+
+<input id="name" placeholder="Nome do produto">
+<input id="price" placeholder="Preço">
+<input id="oldPrice" placeholder="Preço antigo">
+<input id="discount" placeholder="Desconto">
+<input id="rating" placeholder="Avaliação">
+<input id="emoji" placeholder="Emoji">
+<input id="link" placeholder="Link de afiliado da Shopee">
+
+<button onclick="add()">Adicionar produto</button>
+
+<div id="msg" class="msg hidden"></div>
+</div>
+
+
+<div class="panel">
+
+<h2>📦 Produtos cadastrados</h2>
+
+<div id="list"></div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL = "https://mshyuezxmbexhjfdbkzx.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Wrr5AaAx0n2GmX47Qlwq5Q_ZypWByet";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+async function check(){
+
+    const {data:{user}} = await db.auth.getUser();
+
+    if(user){
+
+        document.getElementById("login").style.display="none";
+        document.getElementById("app").classList.remove("hidden");
+
+        load();
+
+    }else{
+
+        document.getElementById("login").style.display="block";
+        document.getElementById("app").classList.add("hidden");
+
+    }
+
+}
+
+
+async function login(){
+
+    const email=document.getElementById("email").value;
+    const password=document.getElementById("password").value;
+
+    const {error}=await db.auth.signInWithPassword({
+        email:email,
+        password:password
+    });
+
+    if(error){
+
+        const m=document.getElementById("loginMsg");
+
+        m.textContent=error.message;
+        m.classList.remove("hidden");
+
+        return;
+    }
+
+    check();
+}
+
+
+async function logout(){
+
+    await db.auth.signOut();
+
+    location.reload();
+
+}
+
+
+async function load(){
+
+    const {data,error}=await db
+        .from("products")
+        .select("*")
+        .order("id");
+
+    if(error){
+
+        document.getElementById("list").innerHTML=
+        "<p class='muted'>Erro ao carregar produtos.</p>";
+
+        return;
+    }
+
+    document.getElementById("list").innerHTML=
+
+    data.map(p=>`
+
+        <div class="item">
+
+            <div>
+
+                ${p.emoji || "🛍️"}
+                <b>${p.name}</b>
+
+                <br>
+
+                <span class="muted">
+                ${p.price || ""} · ${p.link || ""}
+                </span>
+
+            </div>
+
+            <button class="danger"
+            onclick="del('${p.id}')">
+            Excluir
+            </button>
+
+        </div>
+
+    `).join("") ||
+
+    "<p class='muted'>Nenhum produto.</p>";
+
+}
+
+
+async function add(){
+
+    const p={
+
+        name:document.getElementById("name").value,
+        price:document.getElementById("price").value,
+        oldPrice:document.getElementById("oldPrice").value,
+        discount:document.getElementById("discount").value,
+        rating:document.getElementById("rating").value,
+        emoji:document.getElementById("emoji").value || "🛍️",
+        link:document.getElementById("link").value
+
+    };
+
+
+    const {error}=await db
+        .from("products")
+        .insert(p);
+
+
+    const msg=document.getElementById("msg");
+
+    if(error){
+
+        msg.textContent="Erro: "+error.message;
+
+    }else{
+
+        msg.textContent="✅ Produto adicionado!";
+
+        document.querySelectorAll(
+            "#name,#price,#oldPrice,#discount,#rating,#emoji,#link"
+        ).forEach(e=>e.value="");
+
+        load();
+
+    }
+
+    msg.classList.remove("hidden");
+
+}
+
+
+async function del(id){
+
+    if(!confirm("Excluir este produto?")) return;
+
+    await db
+        .from("products")
+        .delete()
+        .eq("id",id);
+
+    load();
+
+}
+
+
+check();
+
+</script>
+
+</body>
+</html>
