@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "name": "Fone de ouvido Bluetooth TWS",
+    "price": "R$ 61,90",
+    "oldPrice": "R$ 129,90",
+    "discount": "-52%",
+    "rating": "⭐ 4,8",
+    "emoji": "🎧",
+    "link": "https://shopee.com.br/"
+  },
+  {
+    "id": "2",
+    "name": "Smartwatch D20",
+    "price": "R$ 54,90",
+    "oldPrice": "R$ 99,90",
+    "discount": "-45%",
+    "rating": "⭐ 4,6",
+    "emoji": "⌚",
+    "link": "https://shopee.com.br/"
+  },
+  {
+    "id": "3",
+    "name": "Smartphone POCO C75",
+    "price": "R$ 789,90",
+    "oldPrice": "R$ 1.099,00",
+    "discount": "-28%",
+    "rating": "⭐ 4,7",
+    "emoji": "📱",
+    "link": "https://shopee.com.br/"
+  }
+]
